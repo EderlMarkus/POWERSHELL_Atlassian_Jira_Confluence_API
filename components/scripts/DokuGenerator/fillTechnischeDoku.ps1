@@ -13,29 +13,58 @@ $Jira = [Jira]::new($authJIRAIntern, "https://webforms-jira-intern.raiffeisenban
 $JiraHelper = [JiraHelper]::new($Jira, $HelperFunctions)
 $Confluence = [Confluence]::new($authJIRAIntern, "https://collab.raiffeisenbank.at")
 $ConfluenceHelper = [ConfluenceHelper]::new($Confluence, $HelperFunctions)
+$Confluence.Space = "RDN"
+$DokuPageId = 65408504
 
-$jql = 'fixVersion="Debitkartenservice 5.0"&fields=description&expand=renderedFields'
+#### FUNCTIONS ####
+function handlePage($pageTitle, $ancestorPageId) {
+    return $Confluence.getPageByTitle($pageTitle);
+    #Es werden keine neue Seiten hier angelegt hier wird nur Inhalt gefüllt
+    # if ($null -eq $page) {
+    #     if ($null -ne $ancestorPageId) {
+    #         $body = $Confluence.getBodyForPageCreation($pageTitle, $ancestorPageId)
+    #     }
+    #     if ($null -eq $ancestorPageId) {
+    #         $body = $Confluence.getBodyForPageCreation($pageTitle)
+    #     }
+    #     $Confluence.post("/rest/api/content/", $body);
+    #     return $Confluence.getPageByTitle($pageTitle);
+    # }
+    # return $page
+
+}
+
+#$jql = 'key="RLB-17612"'
+$jql = 'project = RLB AND component = "BC-GKA - Girokontoänderung" AND updated >= -24h AND type ="Story"'
+$streckenName = "BC-GKA - Girokontoaenderung"
 $issues = $Jira.getIssuesByJQL($jql);
 $issues = $issues.issues
 
-$IssueObject = $JiraHelper.convertIssuesToObject($issues)
-$IssueObjectJson = $IssueObject | ConvertTo-Json -Depth 10
+$ComponentObject = $JiraHelper.convertIssuesToObject($issues)
+$Components = $ComponentObject.components
+$IssueObjectJson = $ComponentObject | ConvertTo-Json -Depth 10
 Set-Clipboard -Value $IssueObjectJson
 
-$FormNames = @();
-
-foreach ($Issue in $IssueObject) {
-    foreach ($FormName in $Issue.formNames) {
-        $alreadyExists = $ConfluenceHelper.HelperFunctions.checkIfArrayContains($FormNames, $FormName)
-        if ($alreadyExists -eq $false) {
-            $FormNames += $FormName
+foreach ($Component in $Components) {
+    $ComponentName = $Component.name
+    $ComponentPageName = $ComponentName
+    $ComponentPage = handlePage $ComponentPageName $DokuPageId
+    if ($null -ne $ComponentPage) {
+        foreach ($Form in $Component.forms) {
+            $ComponentPageId = $ComponentPage.id
+            $FormName = $Form.name
+            $PageName = "Technisch - $FormName"
+            $FormPage = handlePage $PageName $ComponentPageId
+            if ($null -ne $Formpage) {
+                $Issues = $Form.issues
+                $htmlTable = $JiraHelper.HelperFunctions.getHTMLTableForIssues($Issues, $Jira.BaseUrl)
+                Set-Clipboard -Value $htmlTable
+                $pageBody = $Confluence.getBodyForPageUpdate($FormPage, $htmlTable)
+                $pageUrl = "/rest/api/content/" + $FormPage.id
+                $Confluence.put($pageUrl, $pageBody)
+            }
         }
     }
-}
-
-$json = $FormNames | ConvertTo-Json
-Set-Clipboard -Value $json
-
-foreach ($FormName in $FormNames) {
     
 }
+

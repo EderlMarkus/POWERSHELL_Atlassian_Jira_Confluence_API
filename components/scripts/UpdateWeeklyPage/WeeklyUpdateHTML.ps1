@@ -106,6 +106,37 @@ function getManuelEntries($PromptMessage) {
     return $manuelEntries
 }
 
+Function Get-OutlookCalendar($Start, $End) {
+    $retArray = @()
+    Add-type -assembly "Microsoft.Office.Interop.Outlook" | out-null
+    $olFolders = "Microsoft.Office.Interop.Outlook.OlDefaultFolders" -as [type]
+    $outlook = new-object -comobject outlook.application
+    $namespace = $outlook.GetNameSpace("MAPI")
+    $folder = $namespace.getDefaultFolder($olFolders::olFolderCalendar)
+    $Appointments = $folder.Items | select subject, start, isrecurring | sort start
+    foreach ($item in $Appointments) {
+        $retArray += $item
+    }
+    $recurringFilter = "[MessageClass]='IPM.Appointment' AND [isrecurring] = 'True'" #leave the date filter out
+
+    $recurringappointments = ($namespace.GetDefaultFolder(9).Items).restrict($recurringfilter)
+    $RecurringAppointments.Sort("[Start]")
+    $recurringappointments.includerecurrences = $true
+
+    $Start = $Start.ToShortDateString()
+    $End = $End.ToShortDateString()
+
+    $recurringappointment = $recurringappointments.find("  [Start] >= '$Start' AND  [Start] <= '$End'") #use the date filter here
+    do {
+        $recurringappointment = $recurringappointments.FindNext()
+        $retArray += $recurringappointment
+    }
+    until(!$recurringappointment)
+    return $retArray | select subject, start, isrecurring
+
+}
+
+
 ######################## OPTIONS  ########################
 #Wenn $testing = true, dann wird eine Testseite von mir genommen
 $user = @{
@@ -141,9 +172,48 @@ ORDER BY updated DESC"
 ###JQL um Issues zu finden, die nicht fertiggestellt werden konnten
 $jqlNotDone = "assignee = $userkey and status in (Blocked)"
 
+######################## OUTLOOK ########################
 
-######################## CONFLUENCE ########################
-
+$start = Get-Date $dateRange.start
+$end = Get-Date $dateRange.end
+$end = $end.AddDays(1)
+$CalenderFull = Get-OutlookCalendar $start $end
+$CalenderDone = @()
+$CalenderTodo = @()
+function isInValid($Subject) {
+    $filterWords = @(
+        'Abgesagt:*',
+        'Canceled:*',
+        '*Raumreservierung*',
+        'OKP Review',
+        'OKP Weekly'
+    )
+    for ($i = 0; $i -lt $filterWords.Count; $i++) {
+        $word = $filterWords[$i]
+        if ($Subject -like $word -eq $true) {
+            return $true
+        }  
+    }
+    return $false
+}
+foreach ($Entry in $CalenderFull) {
+    $Subject = $Entry.Subject
+    $isInvalid = isInValid($Subject)
+    if ($isInvalid -eq $false) {
+        if ($Entry.Start -gt $start -AND $Entry.Start -le $end) {
+            $alreadyContains = $JiraHelper.HelperFunctions.getIndexOfObjectByParameter($CalenderDone, "Subject", $Subject)
+            if ($alreadyContains -eq -1) {
+                $CalenderDone += $Entry
+            }
+        }
+        if ($Entry.Start -gt $end -AND $Entry.Start -le $end.AddDays(8)) {
+            $alreadyContains = $JiraHelper.HelperFunctions.getIndexOfObjectByParameter($CalenderTodo, "Subject", $Subject)
+            if ($alreadyContains -eq -1) {
+                $CalenderTodo += $Entry
+            }
+        }
+    }
+}
 #was-nehme-ich-mir-vor
 $Issues = $Jira.getIssuesByJQL($jqlToDo)
 $Issues = $Issues.issues
@@ -155,6 +225,16 @@ $currentTodosString = "<h3>JIRA-Issues</h3>"
 $currentTodosString += convertIssuesToHTMLString($Issues)
 
 $manuelEntries = getManuelEntries("Was nehme ich mir vor?")
+
+#CalenderEntries
+$currentTodosString += "<h3>Termine/Meetings</h3><ul>"
+foreach ($entry in $CalenderTodo) {
+    $text = "<li>" + $entry.Subject + "</li>"
+    $currentTodosString += $text
+
+}
+$currentTodosString += "</ul>"
+
 if ($manuelEntries.length -gt 0) {
     $currentTodosString += "<h3>Sonstiges</h3><ul>"
     foreach ($line in $manuelEntries) {
@@ -177,6 +257,15 @@ $whatHaveIDoneString = "<h3>JIRA-Issues</h3>"
 $whatHaveIDoneString += convertIssuesToHTMLString($Issues)
 
 $manuelEntries = getManuelEntries("Was habe ich erreicht?")
+
+#CalenderEntries
+$whatHaveIDoneString += "<h3>Termine/Meetings</h3><ul>"
+foreach ($entry in $CalenderDone) {
+    $text = "<li>" + $entry.Subject + "</li>"
+    $whatHaveIDoneString += $text
+
+}
+$whatHaveIDoneString += "</ul>"
 
 if ($manuelEntries.length -gt 0) {
     $whatHaveIDoneString += "<h3>Sonstiges</h3><ul>"

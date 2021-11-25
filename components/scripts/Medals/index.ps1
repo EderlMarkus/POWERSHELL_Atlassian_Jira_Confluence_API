@@ -152,8 +152,8 @@ function handleMail($medalObject) {
 ####### CODE EXECUTION START #######
 $medals = @(
   @{
-    recipients = @("markus.ederl@raiffeisenbank.at")
-    topic      = "10 Tage ohne Defect bei Release 1.1"
+    recipients = @("michael.brettlecker@raiffeisenbank.at")
+    topic      = "Herausragende Leistungen & Durchhaltevermögen im Projekt Debitkarte."
     level      = 2
   }
 )

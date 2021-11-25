@@ -10,6 +10,16 @@
         return [uri]::EscapeUriString($this.BaseUrl + $url)
     }
     
+    [string]convertUmlaut($Text) {
+            
+        $output = $Text.Replace('ö', 'oe').Replace('ä', 'ae').Replace('ü', 'ue').Replace('ß', 'ss').Replace('Ö', 'Oe').Replace('Ü', 'Ue').Replace('Ä', 'Ae').Replace('&ouml;', "oe").Replace('&Ouml;', "Oe").Replace('&Auml;', "Ae").Replace('&auml;', "ae").Replace('&Uuml;', "Ue").Replace('&uuml;', "ue").Replace('&szlig;', "ß")
+        $isCapitalLetter = $Text -ceq $Text.toUpper()
+        if ($isCapitalLetter) { 
+            $output = $output.toUpper() 
+        }
+        return $output
+    }
+
     [psobject]get($url, $format) {
         if ($null -eq $format) {
             $format = "JSON"
@@ -67,14 +77,7 @@
 
         Invoke-RestMethod -Uri $url -Method 'Delete' -Headers $header
     }
-    [string]convertUmlaut($Text) {
-        $output = $Text.Replace('ö', 'oe').Replace('ä', 'ae').Replace('ü', 'ue').Replace('ß', 'ss').Replace('Ö', 'Oe').Replace('Ü', 'Ue').Replace('Ä', 'Ae').Replace('&ouml;', "oe").Replace('&Ouml;', "Oe").Replace('&Auml;', "Ae").Replace('&auml;', "ae").Replace('&Uuml;', "Ue").Replace('&uuml;', "ue").Replace('&szlig;', "ss")
-        $isCapitalLetter = $Text -ceq $Text.toUpper()
-        if ($isCapitalLetter) { 
-            $output = $output.toUpper() 
-        }
-        return $output
-    }
+   
 }
 
 

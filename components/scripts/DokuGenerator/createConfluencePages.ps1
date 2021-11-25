@@ -44,7 +44,7 @@ $ComponentConfluencePage = handleConfluencePage $componentenName $DokuPageId $Co
 #Formularseiten (Workflow-Steps) als Unterseiten anlegen
 $Workflow = $JiraTest.getWorkflowByWorkflowName($WorkflowName)
 $Steps = $Workflow.workflow.steps.step
-$Steps += "Gesamt"
+$Steps += @{name = "$componentenName - Gesamt" }
 foreach ($Step in $Steps) {
     $AncestorPageId = $ComponentConfluencePage.id
     $FormularName = $Step.name

@@ -12,16 +12,12 @@
 
     [psobject]addFachlicheBeschreibungToIssue($Issue) {
         $beschreibung = $this.getFachlicheBeschreibung($Issue)
-        $beschreibung = $this.removeSpecialCharsFromText($beschreibung)
+        $beschreibung = $this.HelperFunctions.removeSpecialCharsFromText($beschreibung)
         #$beschreibung = $this.convertImagesInText($beschreibung, $this.getAttachments($Issue))
         $Issue | Add-Member -NotePropertyName fachlicheBeschreibung -NotePropertyValue $beschreibung
         return $Issue
     }
-    [psobject]removeSpecialCharsFromText($text) {
-        $text = $text -replace '[^a-zA-Z0-9\s\!\-\.]', ""
-        $text = $text -replace '\r\n|\r|\n', ""
-        return $text
-    }
+
     [psobject]addMockUpsToIssue($Issue) {
         $mockUps = $this.getMockUpNames($Issue)
         $attachments = $this.getAttachments($Issue)
@@ -132,13 +128,13 @@
             }
         }
 
-        $structure = @("Components", "FormNames", "SectionNames");
-        return $this.HelperFunctions.sortArrayByStructure($retObj, $structure)
+        return $this.HelperFunctions.sortArrayByStructure($retObj)
     }
     [string]getBeschreibung($Issue) {
         
         return ""
     }
+  
 
     [string]convertImagesInText($description, $Attachments) {
         foreach ($Attachment in $Attachments) {
@@ -194,6 +190,10 @@
         return '((h[0-5](\.|\s|\w|\.\s|\.\w))(.*?)|\*|\-{3,}|\-{3,}\s|\*[0-5]\.\s|\*[0-5]\.)(' + $regex + ')([^"\r\n]*)'
     }
     [string]getFachlicheBeschreibung($Issue) {
+        $fachlicheBeschreibung = $Issue.fields.customfield_12101
+        if ($null -ne $fachlicheBeschreibung) {
+            return $fachlicheBeschreibung
+        }
         $regex = $this.getBeschreibungRegex($false);
         $description = $Issue.fields.description
         return $this.getSectionByRegex($description, $regex)
@@ -207,6 +207,10 @@
         return $Issue.fields.components
     }
     [string]getFormNames($Issue) {
+        $formCustomField = $Issue.fields.customfield_12400
+        if ($null -ne $formCustomField) {
+            return $formCustomField.child.value
+        }
         $regex = $this.getFormNameRegex($false);
         $description = $Issue.fields.description
         return $this.getSectionByRegex($description, $regex)
@@ -231,6 +235,13 @@
         return  $sectionText
     }
     [bool]checkIfIssueIsValid ($Issue) {
+        $fachlicheBeschreibungCustomField = $Issue.fields.customfield_12101
+        if ($null -ne $fachlicheBeschreibungCustomField) {
+            $isEmpty = [string]::IsNullOrEmpty($fachlicheBeschreibungCustomField.trim())
+            if ($isEmpty -ne $true) {
+                return $true
+            }
+        }
         $description = $Issue.renderedFields.description
         [regex]$regexFachlicheBeschreibung = $this.getBeschreibungRegex($true)
         $matchFachlicheBeschreibung = [regex]::matches($description, $regexFachlicheBeschreibung)
