@@ -164,6 +164,14 @@ class Jira : Atlassian {
     $url = "/rest/api/2/issue/$issueKey"
     $this.put($url, $body)
   }
+  [Void]closeIssue($issueKey, $comment) {
+    $body = @{
+      transition = @{id = 91 }
+    }
+    $body = $body | ConvertTo-Json -Depth 10
+    $url = "/rest/api/2/issue/$issueKey/transitions"
+    $this.post($url, $body)
+  }
   [Void]updateAssignee($issueKey, $assigneeId) {
     $body = @{
       fields = @{
@@ -198,6 +206,9 @@ class Jira : Atlassian {
   [psobject]getIssuesByJQL($jql) {
     return $this.get('/rest/api/2/search?jql=' + $jql + '&expand=renderedFields')
   }
+  [psobject]getIssuesByJQL($jql, $expand, $maxResults) {
+    return $this.get("/rest/api/2/search?jql=$jql&expand=$expand&maxResults=$maxResults")
+  }
   [psobject]getIssuesByJQL($jql, $maxResults) {
     return $this.get("/rest/api/2/search?jql=$jql&expand=renderedFields&maxResults=$maxResults")
   }
@@ -207,5 +218,22 @@ class Jira : Atlassian {
   [psobject]getWorkflowByWorkflowName($workflowName) {
     return $this.get("/secure/admin/workflows/ViewWorkflowXml.jspa?workflowMode=live&workflowName=$workflowName", "XML")
   }
-
+  [psobject]getReleaseVersionsByProjectId($projectId) {
+    return $this.get("/rest/api/2/project/$projectId/version?maxResults=1000")
+  }
+  [psobject]getReleasedVersionsByProjectId($projectId) {
+    $versions = $this.getReleaseVersionsByProjectId($projectId);
+    $versions = $versions.values
+    return $versions | Where-Object { $_.released -eq $true }    
+  }
+  [psobject]getReleasedVersionsByProjectId($projectId, $maxDaysInPast) {
+    $today = Get-Date
+    $days = $maxDaysInPast * -1
+    $dateLimit = $today.AddDays($days)
+    $versions = $this.getReleasedVersionsByProjectId($projectId);
+    return $versions | Where-Object { $null -ne $_.userReleaseDate } | Where-Object { 
+      $date = Get-Date $_.userReleaseDate
+      $date -gt $dateLimit 
+    }    
+  }
 }

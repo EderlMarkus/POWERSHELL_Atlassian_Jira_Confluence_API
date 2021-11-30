@@ -1,12 +1,34 @@
-﻿recepient,level,topic
-markus.ederl@raiffeisenbank.at,1,Herausragende Leistungen auf dem Gebiet der Tüchtigkeit
-markus.ederl@raiffeisenbank.at,2,Herausragende Leistungen auf dem Gebiet der Tüchtigkeit
-markus.ederl@raiffeisenbank.at,3,Herausragende Leistungen auf dem Gebiet der Tüchtigkeit
-markus.ederl@raiffeisenbank.at,3,5 Tage ohne Defect
-markus.ederl@raiffeisenbank.at,2,10 Tage ohne Defect
-lukas.ganster@raiffeisenbank.at,2,10 Tage ohne Defect
-markus.ederl@raiffeisenbank.at,2,10 Tage ohne Defect bei Release 1.0
-lukas.ganster@raiffeisenbank.at,2,10 Tage ohne Defect bei Release 1.0
-markus.ederl@raiffeisenbank.at,2,10 Tage ohne Defect bei Release 1.1
-markus.ederl@raiffeisenbank.at,2,Herausragende Leistungen & Durchhaltevermögen im Projekt Debitkarte.
-michael.brettlecker@raiffeisenbank.at,2,Herausragende Leistungen & Durchhaltevermögen im Projekt Debitkarte.
+﻿recepient,level,topic,date
+thomas.feldkircher@raiffeisenbank.at,3,Mithilfe am Release der Version 'KVP 2.0 - Fehlermeldungen ueberarbeiten',29.11.2021 14:14:33
+lukas.ganster@raiffeisenbank.at,3,Mithilfe am Release der Version 'KVP 2.0 - Fehlermeldungen ueberarbeiten',29.11.2021 14:14:33
+susanne.koller@raiffeisenbank.at,3,Mithilfe am Release der Version 'KVP 2.0 - Fehlermeldungen ueberarbeiten',29.11.2021 14:14:33
+teresa.leibnitz@raiffeisenbank.at,3,Mithilfe am Release der Version 'KVP 2.0 - Fehlermeldungen ueberarbeiten',29.11.2021 14:14:33
+evelyn.knotzer@raiffeisenbank.at,1,Mithilfe am Release der Version 'KVP 2.0 - Fehlermeldungen ueberarbeiten',29.11.2021 14:14:33
+jakob.wagner-extern@raiffeisenbank.at,2,Mithilfe am Release der Version 'KVP 2.0 - Fehlermeldungen ueberarbeiten',29.11.2021 14:14:33
+benjamin.landsmann@raiffeisenbank.at,3,Mithilfe am Release der Version '2109 BAT',29.11.2021 14:15:27
+lukas.ganster@raiffeisenbank.at,3,Mithilfe am Release der Version '2109 BAT',29.11.2021 14:15:27
+jakob.wagner-extern@raiffeisenbank.at,3,Mithilfe am Release der Version '2109 BAT',29.11.2021 14:15:27
+evelyn.knotzer@raiffeisenbank.at,1,Mithilfe am Release der Version '2109 BAT',29.11.2021 14:15:27
+michael.hofegger@raiffeisenbank.at,2,Mithilfe am Release der Version '2109 BAT',29.11.2021 14:15:27
+nicole.polly@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+michael.gasperi@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+birgit.hart@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+regina.lukas@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+bianca.poeltner@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+florian.havel@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+tobias.schnider@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+michael.schoder@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+Oliver.Wortmann@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+Lukas.milanovich@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+jakob.wagner-extern@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+alexander.reeh@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+thomas.feldkircher@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:27
+phoebe-mae.uwira@raiffeisenbank.at,1,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:28
+wolfgang.brenek@raiffeisenbank.at,2,Mithilfe am Release der Version 'Bonus-Kredit online 2.0',29.11.2021 14:15:28
+tobias.schnider@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit stationaer 4.2',29.11.2021 14:15:28
+jakob.wagner-extern@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit stationaer 4.2',29.11.2021 14:15:28
+alexander.reeh@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit stationaer 4.2',29.11.2021 14:15:28
+wolfgang.brenek@raiffeisenbank.at,3,Mithilfe am Release der Version 'Bonus-Kredit stationaer 4.2',29.11.2021 14:15:28
+phoebe-mae.uwira@raiffeisenbank.at,1,Mithilfe am Release der Version 'Bonus-Kredit stationaer 4.2',29.11.2021 14:15:28
+nicole.polly@raiffeisenbank.at,2,Mithilfe am Release der Version 'Bonus-Kredit stationaer 4.2',29.11.2021 14:15:28
+benjamin.landsmann@raiffeisenbank.at,1,Mithilfe am Release der Version 'Hotfix 18.11.2021',29.11.2021 14:15:28

@@ -1,0 +1,305 @@
+﻿/*ANIMATIONS*/
+@keyframes blendIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+body {
+  background: #f8f8f8;
+  color: #eee;
+  animation-name: blendIn;
+  animation-duration: 1s;
+}
+
+.medal {
+  max-width: 5vw;
+}
+
+.dropdown {
+  min-height: 10vh !important;
+}
+textarea {
+  width: 100%;
+  min-height: 10vh;
+  border: solid 1px #ddd;
+}
+.navbar {
+  padding-left: 0;
+}
+
+/* Gegen das 'Springen' in der Navbar */
+a.nav-link {
+  border-bottom: 2px solid lightgray !important;
+  transition: 0.2s linear;
+}
+a.nav-link:hover {
+  border-color: yellow !important;
+  background-color: #5f5f5f !important;
+}
+
+@media screen and (min-width: 728px) {
+  button {
+    max-width: 20vw;
+  }
+}
+.separator {
+  border-bottom: 1px solid #999;
+  margin: 0;
+}
+.navbar-nav > li {
+  margin-right: 5px;
+}
+.nav-link {
+  color: #fff !important;
+}
+
+@media screen and (max-width: 991px) {
+  .navbar-toggler {
+    margin-bottom: 5%;
+  }
+  .nav-link {
+    margin-bottom: 2%;
+    padding-left: 5% !important;
+  }
+}
+
+li {
+  color: #000;
+}
+
+.col-sm {
+  margin: 1rem 0;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:visited,
+.nav-link,
+.btn.active {
+  background-color: #999 !important;
+  border-color: #fbf315 !important;
+}
+.btn-primary,
+.disabled {
+  border-color: #fbf315 !important;
+}
+
+.btn {
+  width: 100% !important;
+}
+.drop_zone {
+  min-height: 10vh;
+  background: #eee;
+  color: #222;
+}
+
+.drop_zone.hover {
+  background: #fbf315;
+}
+
+.drop_zone h3 {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: normal;
+  top: 0;
+  bottom: 0;
+  /* position: absolute; */
+  margin: auto;
+  left: 0;
+  right: 0;
+  /* height: 22px; */
+}
+
+.drop_zone.hover h3#dropZoneScreenshot::first-line,
+#dropZoneInfoText.active {
+  font-weight: bold;
+}
+
+.drop_zone h3.active {
+  height: 44px;
+}
+
+.headlineContainer {
+  background-image: url(./media/Raiffeisen_Österreich_logo.svg.png);
+  height: 40px;
+  width: 40px;
+  background-size: cover;
+}
+
+.headline {
+  font-size: 23px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #000;
+}
+
+.subheadline {
+  font-size: 18px;
+  line-height: 22px;
+  color: #000;
+}
+
+.infobox {
+  background: #fff483;
+  padding: 0 2%;
+  color: #222;
+}
+
+.infobox h3 {
+  margin: 10px 0;
+}
+
+h3 {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: normal;
+}
+
+.headlineContainer p.headline {
+  margin: 0;
+}
+
+.headlineWrapper {
+  position: absolute;
+  left: 50px;
+}
+.caret:before {
+  content: ">" !important;
+}
+
+.btn {
+  background: #999;
+  border: none;
+  border-radius: 0;
+}
+
+.btn-primary {
+  width: 90%;
+}
+.table-responsive {
+  max-height: 50vh;
+}
+table th {
+  text-align: center;
+}
+table td {
+  text-align: center;
+  border: 1px solid #ddd;
+}
+table tr:nth-child(odd) {
+  background-color: #eee;
+}
+
+.btn:hover,
+.nav-link:hover {
+  border-bottom: 2px solid #fbf315;
+  background: #999 !important;
+  color: #fff !important;
+}
+
+.tableFixHead {
+  overflow-y: auto;
+  height: 50vh;
+  border-collapse: separate;
+}
+.tableFixHead thead th {
+  position: sticky;
+  top: 0;
+  border-bottom: 2px solid #fbf315 !important;
+}
+
+.tableHeader th {
+  border-bottom: 2px solid #fbf315 !important;
+  background: #efefef !important;
+  color: #000 !important;
+}
+
+.tableHeader .td {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+td {
+  vertical-align: middle !important;
+}
+.btn-primary:hover {
+  background: #fff;
+  color: #111;
+}
+
+.drop_zone.hasFile {
+  background: #fff483;
+}
+.drop_zone {
+  text-align: center;
+}
+/* Remove default bullets */
+ul,
+#myUL {
+  list-style-type: none;
+}
+
+/* Remove margins and padding from the parent ul */
+#myUL {
+  margin: 0;
+  padding: 0;
+}
+
+/* Style the caret/arrow */
+.caret {
+  cursor: pointer;
+  user-select: none; /* Prevent text selection */
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.caret::before {
+  content: "\25B6";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+.caret-down::before {
+  transform: rotate(90deg);
+}
+
+/* Hide the nested list */
+.nested {
+  display: none;
+}
+
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.active {
+  display: block;
+}
+
+.fixedAtBottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  left: 0;
+  margin: 0;
+  padding: 1% 0;
+}
+
+.wideButton {
+  width: 100%;
+}
+
+.app {
+  width: 100%;
+  max-width: 1400px;
+  margin: auto;
+  background: #fff;
+  border-left: 1px solid #e4e4e4;
+  border-right: 1px solid #e4e4e4;
+  min-height: 100vh;
+  padding: 2%;
+}

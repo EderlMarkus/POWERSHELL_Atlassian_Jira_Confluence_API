@@ -1,13 +1,18 @@
-﻿#import needed modules
-using module '..\..\helper\HelperFunctions.psm1'
+﻿using module '..\..\helper\HelperFunctions.psm1'
 using module '..\..\helper\JiraHelper.psm1'
 using module '..\..\helper\ConfluenceHelper.psm1'
 using module '..\..\atlassian\Jira.psm1'
 using module '..\..\atlassian\Confluence.psm1'
-
+using module '.\RecepientFinder.psm1'
 #import needed files
 . ..\..\..\constants.ps1
 
+$HelperFunctions = [HelperFunctions]::new()
+$Jira = [Jira]::new($authJIRAIntern, "https://webforms-jira-intern.raiffeisenbank.at")
+$JiraHelper = [JiraHelper]::new($Jira, $HelperFunctions)
+$Confluence = [Confluence]::new($authJIRAIntern, "https://collab.raiffeisenbank.at")
+$ConfluenceHelper = [ConfluenceHelper]::new($Confluence, $HelperFunctions)
+$RecepientFinder = [RecepientFinder]::new($Jira, $JiraHelper)
 ####### FUNCTIONS START #######
 function getLevelObject($level) {
   $text = ""
@@ -98,14 +103,14 @@ function getMailBody($level, $topic) {
                     src="https://antrag.tst.raiffeisenbank.at/rest/fileStore/4919afd9-16db-45c1-80b4-4650a3d85281?companyBusinessId=32000"
                     width="70%"
                   />
-                  <p>Dr. Max Mustermann</p>
+                  <p>Markus Ederl, Legende</p>
                 </td>
                 <td style="text-align: center">
                   <img
                     src="https://antrag.tst.raiffeisenbank.at/rest/fileStore/4919afd9-16db-45c1-80b4-4650a3d85281?companyBusinessId=32000"
                     width="70%"
                   />
-                  <p>Dr. Maria Musterfrau</p>
+                  <p>Lukas Ganster, Stellvertretende Legende</p>
                 </td>
               </tr>
             </table>
@@ -118,9 +123,9 @@ function getMailBody($level, $topic) {
 '
 }
 function addToDatabase($recipient, $level, $topic, $path) {
-  $NewLine = "{0},{1},{2}" -f $recipient, $level, $topic
+  $date = Get-Date
+  $NewLine = "{0},{1},{2},{3}" -f $recipient, $level, $topic, $date
   $NewLine | add-content -path "data.csv"    
-  
 }
 function getFromDatabase() {
   return Import-Csv "data.csv"
@@ -129,15 +134,35 @@ function checkIfEntryExistsInDatabase($recipient, $level, $topic, $data) {
   $foundEntries = $data | Where-Object { $_.recepient -eq $recipient -and $_.level -eq $level -and $_.topic -eq $topic }
   return $null -ne $foundEntries
 }
-function handleDatabase($medalObject, $recipient) {
+
+function updateHTML($data) {
+  $addString = "var dataJSON = ["
+  foreach ($line in $data) {
+
+    $recepient = $line.recepient
+    $level = $line.level
+    $topic = $line.topic.Replace("'", "").Replace('"', '')
+    $date = $line.date
+    $addString += "{recepient: '$recepient',level:'$level',topic:'$topic',date:'$date'},"
+  }
+  $addString += "]"
+  Set-Content -Path "./htmlPage/data.js" -Value $addString -Encoding UTF8 
+}
+function handleDatabase($medalObject, $recipients) {
   $topic = $medalObject.topic
   $level = $medalObject.level
   $data = getFromDatabase
-  $entryExists = checkIfEntryExistsInDatabase $recipient $level $topic $data
-  if ($entryExists -eq $false) {
-    addToDatabase $recipient $level $topic
+  $entriesExist = $true
+  foreach ($recipient in $recipients) {
+    $entryExists = checkIfEntryExistsInDatabase $recipient $level $topic $data
+    if ($entryExists -eq $false) {
+      $entriesExist = $false
+      addToDatabase $recipient $level $topic
+    }
   }
-  return $entryExists
+  updateHTML(getFromDatabase)
+
+  return $entriesExist
 }
 function handleMail($medalObject) {
   $recipients = $medalObject.recipients
@@ -147,26 +172,38 @@ function handleMail($medalObject) {
   $body = getMailBody $level $topic
   sendMail $recipients $body $level
 }
+function pushToNetworkFolder($pathOfRepository) {
+  Set-Location -Path ".\htmlPage"
+  git checkout -b master
+  git add .
+  $commitMessage = "Automated Push"
+  git commit -m $commitMessage
+  git push -u origin master
+  Set-Location -Path $pathOfRepository
+  git merge master
+}
 ####### FUNCTIONS END #######
 
 ####### CODE EXECUTION START #######
-$medals = @(
-  @{
-    recipients = @("michael.brettlecker@raiffeisenbank.at")
-    topic      = "Herausragende Leistungen & Durchhaltevermögen im Projekt Debitkarte."
-    level      = 2
-  }
-)
+#### GET INFO FROM JIRA
+#### TODO ###
+
+#$noDefectRecepients = $RecepientFinder.getNoDefectsRecepients()
+$medals = $RecepientFinder.getReleaseVersionsRecepients(7)
+
 
 foreach ($medal in $medals) {
   $recipients = $medal.recipients
-  foreach ($recipient in $recipients) {
-    $entryExisted = handleDatabase $medal $recipient
-    if ($entryExisted -eq $false) {
-      handleMail($medal)
-    }
+  $entryExisted = handleDatabase $medal $recipients
+  if ($entryExisted -eq $false) {
+    #handleMail($medal)
+    Write-Host "Sende Mail an $recipients"
   }
 }
+
+pushToNetworkFolder("H:\Datenaustausch\Exchange\RUV\ONK\DIG_Collaboration\Collab\Medaillien")
+
+
 ####### CODE EXECUTION END #######
 
 

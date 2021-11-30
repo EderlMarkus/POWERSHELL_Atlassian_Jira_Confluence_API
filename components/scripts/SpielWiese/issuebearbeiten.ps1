@@ -14,10 +14,10 @@ $JiraHelper = [JiraHelper]::new($Jira, $HelperFunctions)
 $Confluence = [Confluence]::new($authJIRAIntern, "https://collab.raiffeisenbank.at")
 $ConfluenceHelper = [ConfluenceHelper]::new($Confluence, $HelperFunctions)
 
-$jql = 'summary ~ "Formular: RKS" AND component = "BC-RKS - Debitkarten"'
+$jql = 'issue in linkedIssues("RLB-26122")'
 $issues = $Jira.getIssuesByJQL($jql).issues
 
 foreach ($issue in $issues) {
     $assigneeId = "wlnbrmi"
-    $Jira.updateAssignee($issue.key, $assigneeId)
+    $Jira.closeIssue($issue.key, "Closed")
 }

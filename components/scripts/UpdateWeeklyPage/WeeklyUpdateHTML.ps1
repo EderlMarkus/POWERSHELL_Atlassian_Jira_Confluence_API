@@ -136,7 +136,22 @@ Function Get-OutlookCalendar($Start, $End) {
 
 }
 
-
+function isInValid($Subject) {
+    $filterWords = @(
+        'Abgesagt:*',
+        'Canceled:*',
+        '*Raumreservierung*',
+        'OKP Review',
+        'OKP Weekly'
+    )
+    for ($i = 0; $i -lt $filterWords.Count; $i++) {
+        $word = $filterWords[$i]
+        if ($Subject -like $word -eq $true) {
+            return $true
+        }  
+    }
+    return $false
+}
 ######################## OPTIONS  ########################
 #Wenn $testing = true, dann wird eine Testseite von mir genommen
 $user = @{
@@ -177,36 +192,23 @@ $jqlNotDone = "assignee = $userkey and status in (Blocked)"
 $start = Get-Date $dateRange.start
 $end = Get-Date $dateRange.end
 $end = $end.AddDays(1)
+$lastWeekStart = $start.AddDays(-7)
+$lastWeekEnd = $end.AddDays(-7)
 $CalenderFull = Get-OutlookCalendar $start $end
 $CalenderDone = @()
 $CalenderTodo = @()
-function isInValid($Subject) {
-    $filterWords = @(
-        'Abgesagt:*',
-        'Canceled:*',
-        '*Raumreservierung*',
-        'OKP Review',
-        'OKP Weekly'
-    )
-    for ($i = 0; $i -lt $filterWords.Count; $i++) {
-        $word = $filterWords[$i]
-        if ($Subject -like $word -eq $true) {
-            return $true
-        }  
-    }
-    return $false
-}
+
 foreach ($Entry in $CalenderFull) {
     $Subject = $Entry.Subject
     $isInvalid = isInValid($Subject)
     if ($isInvalid -eq $false) {
-        if ($Entry.Start -gt $start -AND $Entry.Start -le $end) {
+        if ($Entry.Start -gt $lastWeekStart -AND $Entry.Start -le $lastWeekEnd) {
             $alreadyContains = $JiraHelper.HelperFunctions.getIndexOfObjectByParameter($CalenderDone, "Subject", $Subject)
             if ($alreadyContains -eq -1) {
                 $CalenderDone += $Entry
             }
         }
-        if ($Entry.Start -gt $end -AND $Entry.Start -le $end.AddDays(8)) {
+        if ($Entry.Start -gt $start -AND $Entry.Start -le $end) {
             $alreadyContains = $JiraHelper.HelperFunctions.getIndexOfObjectByParameter($CalenderTodo, "Subject", $Subject)
             if ($alreadyContains -eq -1) {
                 $CalenderTodo += $Entry

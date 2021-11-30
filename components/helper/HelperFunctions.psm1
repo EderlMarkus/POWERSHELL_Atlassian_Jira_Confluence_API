@@ -26,7 +26,8 @@
     [int32]getIndexInArrayOfObjects($arrayOfObject, $parameter, $value) {
         for ($i = 0; $i -le $arrayOfObject.length; $i++) {
             $entry = $arrayOfObject[$i]
-            if ($entry -ne $null -AND $entry[$parameter] -eq $value) {
+            $entryValue = $entry."$parameter"
+            if ($entry -ne $null -AND $entryValue -eq $value) {
                 return $i
             }
         }

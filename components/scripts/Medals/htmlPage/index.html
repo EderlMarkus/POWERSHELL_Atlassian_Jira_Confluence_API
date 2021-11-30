@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medaillienliste</title>
+    <script src="./libraries/jquery.js"></script>
+    <script src="./libraries/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="./libraries/bootstrap.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="container">
+        <div class="row mb-3" id="header">
+          <div class="col" style="padding: 0px">
+            <div class="headlineContainer">
+              <div class="container headlineWrapper">
+                <div class="row"><p class="headline">Medallien</p></div>
+                <div class="row"><p class="subheadline">Liste</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col p-0">
+            <table class="table tableFixHead">
+              <thead>
+                <tr class="tableHeader">
+                  <th data-editable>Empfänger</th>
+                  <th data-editable>Level</th>
+                  <th data-editable>Thema</th>
+                  <th data-editable>Verliehen am:</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="data">
+      <script src="./data.js"></script>
+      <script src="./script.js"></script>
+    </div>
+  </body>
+</html>
