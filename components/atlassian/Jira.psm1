@@ -44,8 +44,11 @@ class Jira : Atlassian {
   [Void]createNewIssue($projectId, $issuetypeId, $componentIds, $summary, $reporterId, $assigneeId) {
     $this.createNewIssue($projectId, $issuetypeId, $componentIds, $summary, $reporterId, $assigneeId, "")
   }
-
   [Void]createNewIssue($projectId, $issuetypeId, $componentIds, $summary, $reporterId, $assigneeId, $priority) {
+    $this.createNewIssue($projectId, $issuetypeId, $componentIds, $summary, $reporterId, $assigneeId, $priority,$null)
+  }
+
+  [Void]createNewIssue($projectId, $issuetypeId, $componentIds, $summary, $reporterId, $assigneeId, $priority, $additonalFields) {
     $body = '{
             "fields": {
               "summary": "'+ $summary + '",
@@ -66,6 +69,11 @@ class Jira : Atlassian {
     foreach ($componentId in $componentIds) {
       $componentObject += @{
         id = $componentId
+      }
+    }
+    if ($null -ne $additonalFields){
+      foreach ($field in $additonalFields.GetEnumerator()) {
+        $body.fields | Add-Member -NotePropertyName $field.Key -NotePropertyValue $field.Value
       }
     }
     $body.fields | Add-Member -NotePropertyName components -NotePropertyValue $componentObject
@@ -96,6 +104,26 @@ class Jira : Atlassian {
     Write-Host $body
     Write-Host $url
     $this.post($url, $body)
+  }
+  [Void]updateFixVersion($id, $description, $name, $releaseDate, $startDate, $projectId) {
+    $url = "/rest/api/2/version/$id"
+
+    $releaseDate = Get-Date $releaseDate -Format "yyyy-MM-dd"
+    $startDate = Get-Date $startDate -Format "dd.MM.yyyy"
+
+    $Body = @{
+      description   = $description
+      name          = $name
+      archived      = "false"
+      released      = "false"
+      releaseDate   = $releaseDate
+      projectId     = $projectId
+      userStartDate = $startDate
+    }
+    $body = $Body | ConvertTo-Json
+    Write-Host $body
+    Write-Host $url
+    $this.put($url, $body)
   }
   [Void]deleteIssueByKey($issueKey) {
     $this.delete("/rest/api/2/issue/$issueKey")
@@ -158,6 +186,18 @@ class Jira : Atlassian {
     $body = @{
       fields = @{
         description = $description
+      }
+    }
+    $body = $body | ConvertTo-Json -Depth 10
+    $url = "/rest/api/2/issue/$issueKey"
+    $this.put($url, $body)
+  }
+  [Void]updateSecurityLevel($issueKey, $securityLevelId) {
+    $body = @{
+      fields = @{
+        security = @{
+          id = $securityLevelId
+        }
       }
     }
     $body = $body | ConvertTo-Json -Depth 10

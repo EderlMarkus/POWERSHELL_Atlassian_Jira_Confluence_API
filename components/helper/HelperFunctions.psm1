@@ -118,9 +118,12 @@
         return $text
     }
 
-    [string]getHTMLTableForIssues($issues, $baseUrl) {
+    [string]getHTMLTableForIssues($issues, $baseUrl, $FormName) {
        
-        $HtmlString += "<div><table><tr><th>Titel</th><th>Beschreibung</th><th>Mock-Ups</th><th>JIRA-Ticket</th><th>Lösungsversion</th></tr>"
+        $HtmlString = "<div><table><tr><th>Titel</th><th>Beschreibung</th><th>Mock-Ups</th><th>JIRA-Ticket</th><th>Lösungsversion</th></tr>"
+        if ($Formname.Contains("Gesamt")){
+            $HtmlString = "<div><table><tr><th>Titel</th><th>Beschreibung</th><th>Mock-Ups</th><th>Formular</th><th>JIRA-Ticket</th><th>Lösungsversion</th></tr>"
+        }
         foreach ($issue in $issues) {
             $HtmlString += "<tr>"
             $Zusammenfassung = $this.removeSpecialCharsFromText($issue.fields.summary)
@@ -137,6 +140,10 @@
                 $HtmlString += '<a href="' + $LinkImage + '"><img src="' + $LinkThumbNail + '"/></a>'
             }
             $HtmlString += "</td>"
+            if ($Formname.Contains("Gesamt")){
+                $links = $this.getFormNamesAsLinks($issue)
+                $HtmlString += '<td>'+$links+'</td>'
+            }
             $HtmlString += '<td><a href="' + $baseUrl + '/browse/' + $JiraIssue + '">' + $JiraIssue + '</a></td>'
             $HtmlString += "<td> $FixVersionsString </td>"
             $HtmlString += "</tr>"
@@ -146,6 +153,16 @@
     }
 
 
+    [string]getFormNamesAsLinks($issue){
+        $formNames = $issue.formNames
+        $retString = ""
+        foreach ($formName in $formNames) {
+            if ($formName -ne "Gesamt"){
+                $retString += '<a href="./Technisch+-+' + $formName + '">' + $formName + '</a>'
+            }
+        }
+        return $retString
+    }
 
     [string]getFixVersionsAsString($Issue, $baseUrl) {
         $retString = ""

@@ -124,6 +124,7 @@
                 $Issue = $this.addComponentNamesToIssue($Issue)
                 $Issue = $this.addFormNamesToIssue($Issue)
                 $Issue = $this.addSectionsToIssue($Issue)
+                $Issue = $this.addFixVersionStringToIssue($Issue);
                 $retObj += $Issue
             }
         }
@@ -135,6 +136,11 @@
         return ""
     }
   
+    [psobject]addFixVersionStringToIssue($Issue) {
+        $Value = $this.HelperFunctions.getFixVersionsAsString($Issue, $this.Jira.BaseUrl)
+        $Issue | Add-Member -NotePropertyName fixVersionsString -NotePropertyValue $Value 
+        return $Issue
+    }
 
     [string]convertImagesInText($description, $Attachments) {
         foreach ($Attachment in $Attachments) {
