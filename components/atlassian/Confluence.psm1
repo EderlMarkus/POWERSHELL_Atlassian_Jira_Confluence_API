@@ -9,6 +9,39 @@ class Confluence : Atlassian {
         
     }
 
+        [psobject]getAttachmentsByPageTitle($title) {
+        $page = $this.getPageByTitle($title)
+        $pageId = $page.id
+        $url = "/rest/api/content/$pageId/child/attachment"
+        return $this.get($url).results
+    }
+
+    [Void]deleteAttachmentFromPage($pageId, $attachmentId) {
+        $url = "/rest/api/content/$attachmentId"
+        $this.delete($url)
+    }
+    [Void]uploadAttachmentToPage($pageId, $fPath, $fName) {
+        $Headers = @{'Authorization' = "Basic " + $this.Auth 
+            'X-Atlassian-Token'      = 'nocheck'
+        }
+
+        $fileBytes = [System.IO.File]::ReadAllBytes($fPath);
+        $fileEncode = [System.Text.Encoding]::GetEncoding('UTF-8').GetString($fileBytes);
+        $delimiter = [System.Guid]::NewGuid().ToString(); 
+        $LF = "`r`n";
+        $bodyData = ( 
+            "--$delimiter",
+            "Content-Disposition: form-data; name=`"file`"; filename=`"$fName`"",
+            "Content-Type: application/octet-stream$LF",
+            $fileEncode,
+            "--$delimiter--$LF" 
+        ) -join $LF
+
+        $uri = "$("/rest/api/content/")$($pageId + "/")$("child/attachment")"
+        $uri = $this.getUrl($uri)
+        Invoke-RestMethod -Uri $uri -Method POST -ContentType "multipart/form-data; boundary=`"$delimiter`"" -Headers $Headers -Body $bodyData
+    }
+
     [psobject]getPageByTitle($title) {
         $url = "/rest/api/content/?title=" + $title
         $pageInfo = $this.get($url).results

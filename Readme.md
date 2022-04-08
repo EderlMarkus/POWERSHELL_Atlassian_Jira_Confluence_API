@@ -12,7 +12,7 @@ base64 of username:password
 ### Klasse instanzieren
 ```
 $authJIRAIntern = "dXNlcm5hbWU6cGFzc3dvcmQ="
-$JiraBaseUrl = "https://webforms-jira-intern.raiffeisenbank.at"
+$JiraBaseUrl = "https://<yourConfluenceServer>.com"
 $Jira = [Jira]::new($authJIRAIntern, $JiraBaseUrl)
 ```
 ### CRUD-Requests
@@ -30,7 +30,7 @@ $JIRA.delete("/rest/api/2/issue/")
 ```
 ### Hol Jira-Issues anhand von JQL-Suche:
 ```
-$jql = 'key="RLB-27279"'
+$jql = 'key="ID-1232"'
 $issues = $Jira.getIssuesByJQL($jql).issues
 ```
 ### Neue Fixversion anlegen:
@@ -40,13 +40,13 @@ $description = "Meine Beschreibung für die Loesungsversion"
 $name = "Meine neue Loesungsversion"
 $releaseDate = "03.12.2021"
 $startDate = "02.12.2021"
-$projectName = "RLB Projektmanagement"
+$projectName = "My Project"
 $projectId = $Jira.getProjectIdByProjectName($projectName)
 $Jira.createNewFixVersion($description, $name, $releaseDate, $startDate, $projectId)
 ```
 ### Neues Issue erstellen
 ```
-$projectName = "RLB Projektmanagement"
+$projectName = "My Project"
 $projectId = $Jira.getProjectIdByProjectName($projectName)
 $Jira.createNewIssue($projectId, $issuetypeId, $componentIds, $summary, $reporterId, $assigneeId) {
 ```
