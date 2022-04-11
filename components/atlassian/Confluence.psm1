@@ -1,4 +1,4 @@
-﻿using module '.\Atlassian.psm1'
+using module '.\Atlassian.psm1'
 class Confluence : Atlassian {
     [string]$Auth
     [string]$BaseUrl
@@ -9,9 +9,14 @@ class Confluence : Atlassian {
         
     }
 
-        [psobject]getAttachmentsByPageTitle($title) {
+    [psobject]getAttachmentsByPageTitle($title) {
         $page = $this.getPageByTitle($title)
         $pageId = $page.id
+        $url = "/rest/api/content/$pageId/child/attachment"
+        return $this.get($url).results
+    }
+
+    [psobject]getAttachmentsByPageId($pageId) {
         $url = "/rest/api/content/$pageId/child/attachment"
         return $this.get($url).results
     }
@@ -20,28 +25,21 @@ class Confluence : Atlassian {
         $url = "/rest/api/content/$attachmentId"
         $this.delete($url)
     }
-    [Void]uploadAttachmentToPage($pageId, $fPath, $fName) {
-        $Headers = @{'Authorization' = "Basic " + $this.Auth 
-            'X-Atlassian-Token'      = 'nocheck'
-        }
+    [string]uploadAttachmentToPage($pageId, $fPath, $name) {
+        $authToken = $this.Auth
+        $url = $this.BaseUrl
+        Write-Host "creating uri and web client for file upload"
+        $uri = "$url/rest/api/content/$pageId/child/attachment"; 
+        $webClient = New-Object System.Net.WebClient;
+        $webClient.Headers.Add('X-Atlassian-Token', 'no-check');
+        $webClient.Headers.Add('Authorization', "Basic $authToken"); 
+    
 
-        $fileBytes = [System.IO.File]::ReadAllBytes($fPath);
-        $fileEncode = [System.Text.Encoding]::GetEncoding('UTF-8').GetString($fileBytes);
-        $delimiter = [System.Guid]::NewGuid().ToString(); 
-        $LF = "`r`n";
-        $bodyData = ( 
-            "--$delimiter",
-            "Content-Disposition: form-data; name=`"file`"; filename=`"$fName`"",
-            "Content-Type: application/octet-stream$LF",
-            $fileEncode,
-            "--$delimiter--$LF" 
-        ) -join $LF
-
-        $uri = "$("/rest/api/content/")$($pageId + "/")$("child/attachment")"
-        $uri = $this.getUrl($uri)
-        Invoke-RestMethod -Uri $uri -Method POST -ContentType "multipart/form-data; boundary=`"$delimiter`"" -Headers $Headers -Body $bodyData
+        Write-Host "Uploading $fPath confluence page of id $pageId via uri $uri"; 
+        $webClient.UploadFile($uri, $fPath); 
+        $url = $this.Baseurl + "/download/attachments/$pageId/$name"
+        return $url
     }
-
     [psobject]getPageByTitle($title) {
         $url = "/rest/api/content/?title=" + $title
         $pageInfo = $this.get($url).results
@@ -143,6 +141,10 @@ class Confluence : Atlassian {
         }
         $this.delete("/rest/api/content/" + $ancestorId)
         return $true
+    }
+
+    [psobject]getContentByCQL($cql) {
+        return $this.get("/rest/api/search/?cql=$cql&limit=1000" )
     }
 
 
