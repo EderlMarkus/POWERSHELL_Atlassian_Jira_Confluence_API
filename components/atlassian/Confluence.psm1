@@ -50,6 +50,17 @@ class Confluence : Atlassian {
         return $this.getPageById($pageId)
     }
 
+    [string]getJiraMacroAsHTMLString($key) {
+        $guid = New-Guid
+        return '<p><ac:structured-macro ac:name="jira" ac:schema-version="1" 
+        ac:macro-id="'+ $guid + '">
+        <ac:parameter ac:name="server">JIRA Internal</ac:parameter>
+        <ac:parameter ac:name="columnIds">issuekey, summary, issuetype, created, updated, duedate, assignee, reporter, priority, status, resolution</ac:parameter>
+        <ac:parameter ac:name="columns">key, summary, type, created, updated, due, assignee, reporter, priority, status, resolution</ac:parameter>
+        <ac:parameter ac:name="key">'+ $key + '</ac:parameter>
+        </ac:structured-macro></p>'
+    }
+
     [psobject]getPageById($id) {
         return $this.get("/rest/api/content/" + $id + "?expand=space,history,body.view,body.storage,metadata.labels")
     }
